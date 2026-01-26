@@ -1,0 +1,27 @@
+{
+    "version": "0.2",
+    "language": "en,jp",
+    "words": [
+        "bitshave",
+        "blake",
+        "clap",
+        "cwebp",
+        "gifsicle",
+        "imgopt",
+        "indicatif",
+        "jpegtran",
+        "oxipng",
+        "rayon",
+        "serde",
+        "svgo",
+        "takemuramasaki",
+        "thiserror",
+        "walkdir"
+    ],
+    "ignorePaths": [
+        "Cargo.lock",
+        "target/**",
+        ".git/**",
+        "flake.lock"
+    ]
+}
