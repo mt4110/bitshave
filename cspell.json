@@ -12,6 +12,7 @@
         "indicatif",
         "jpegtran",
         "oxipng",
+        "pathext",
         "rayon",
         "serde",
         "svgo",

@@ -1,9 +1,0 @@
-/Users/takemuramasaki/_workspace/bitshave/target/debug/deps/libfile_format-73d570c7ff59643b.rmeta: /Users/takemuramasaki/.cargo/registry/src/index.crates.io-6f17d22bba15001f/file-format-0.25.0/src/lib.rs /Users/takemuramasaki/.cargo/registry/src/index.crates.io-6f17d22bba15001f/file-format-0.25.0/src/macros.rs /Users/takemuramasaki/.cargo/registry/src/index.crates.io-6f17d22bba15001f/file-format-0.25.0/src/formats.rs /Users/takemuramasaki/.cargo/registry/src/index.crates.io-6f17d22bba15001f/file-format-0.25.0/src/readers.rs /Users/takemuramasaki/.cargo/registry/src/index.crates.io-6f17d22bba15001f/file-format-0.25.0/src/signatures.rs
-
-/Users/takemuramasaki/_workspace/bitshave/target/debug/deps/file_format-73d570c7ff59643b.d: /Users/takemuramasaki/.cargo/registry/src/index.crates.io-6f17d22bba15001f/file-format-0.25.0/src/lib.rs /Users/takemuramasaki/.cargo/registry/src/index.crates.io-6f17d22bba15001f/file-format-0.25.0/src/macros.rs /Users/takemuramasaki/.cargo/registry/src/index.crates.io-6f17d22bba15001f/file-format-0.25.0/src/formats.rs /Users/takemuramasaki/.cargo/registry/src/index.crates.io-6f17d22bba15001f/file-format-0.25.0/src/readers.rs /Users/takemuramasaki/.cargo/registry/src/index.crates.io-6f17d22bba15001f/file-format-0.25.0/src/signatures.rs
-
-/Users/takemuramasaki/.cargo/registry/src/index.crates.io-6f17d22bba15001f/file-format-0.25.0/src/lib.rs:
-/Users/takemuramasaki/.cargo/registry/src/index.crates.io-6f17d22bba15001f/file-format-0.25.0/src/macros.rs:
-/Users/takemuramasaki/.cargo/registry/src/index.crates.io-6f17d22bba15001f/file-format-0.25.0/src/formats.rs:
-/Users/takemuramasaki/.cargo/registry/src/index.crates.io-6f17d22bba15001f/file-format-0.25.0/src/readers.rs:
-/Users/takemuramasaki/.cargo/registry/src/index.crates.io-6f17d22bba15001f/file-format-0.25.0/src/signatures.rs:
