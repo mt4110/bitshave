@@ -25,7 +25,7 @@
             
             # Tools required for runtime (checking PATH dependence)
             oxipng
-            libjpeg
+            libjpeg_turbo
             libwebp
             nodePackages.svgo 
             gifsicle

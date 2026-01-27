@@ -1,13 +1,24 @@
 use anyhow::{Context, Result};
 use std::env;
 use std::path::{Path, PathBuf};
-use std::process::Command;
+use std::process::{Command, Stdio};
 
 /// Runs an external command.
 /// Returns Ok(true) if the command succeeded (exit code == 0).
+///
+/// Default: silence stdout/stderr to keep bitshave honest & quiet.
+/// To see tool output: set BITSHAVE_VERBOSE=1
 pub fn run_external(program: &str, args: &[&str]) -> Result<bool> {
-    let status = Command::new(program)
-        .args(args)
+    let verbose = env::var_os("BITSHAVE_VERBOSE").is_some();
+
+    let mut cmd = Command::new(program);
+    cmd.args(args);
+
+    if !verbose {
+        cmd.stdout(Stdio::null()).stderr(Stdio::null());
+    }
+
+    let status = cmd
         .status()
         .with_context(|| format!("Failed to find or execute tool: {}", program))?;
 
@@ -82,17 +93,6 @@ fn is_executable_file(path: &Path) -> bool {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_run_echo() {
-        let res = run_external("echo", &["hello"]).unwrap();
-        assert!(res);
-    }
-}
-
 use crate::optimizer::ImageFormat;
 
 pub struct ToolAvailability {
@@ -164,5 +164,21 @@ impl ToolAvailability {
             ImageFormat::Svg => Some(("svgo", self.svgo)),
             ImageFormat::Gif => Some(("gifsicle", self.gifsicle)),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_run_echo() {
+        let res = run_external("echo", &["hello"]).unwrap();
+        assert!(res);
+    }
+
+    #[test]
+    fn test_check_tool_availability_echo() {
+        assert!(check_tool_availability("echo"));
     }
 }
