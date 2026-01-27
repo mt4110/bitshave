@@ -1,7 +1,7 @@
-use anyhow::Result;
-use file_format::FileFormat; 
-use std::path::Path;
 use crate::optimizer::ImageFormat;
+use anyhow::Result;
+use file_format::FileFormat;
+use std::path::Path;
 
 pub struct ValidatedFile {
     pub path: std::path::PathBuf,
@@ -16,11 +16,11 @@ pub fn validate(path: &Path) -> Result<Option<ValidatedFile>> {
 
     let metadata = path.metadata()?;
     if metadata.len() == 0 {
-        return Ok(None); 
+        return Ok(None);
     }
 
     let format = FileFormat::from_file(path)?;
-    
+
     let image_format = match format {
         FileFormat::PortableNetworkGraphics => ImageFormat::Png,
         FileFormat::JointPhotographicExpertsGroup => ImageFormat::Jpeg,
@@ -42,7 +42,7 @@ pub fn validate(path: &Path) -> Result<Option<ValidatedFile>> {
             (ImageFormat::Gif, "gif") => true,
             _ => false,
         };
-        
+
         if !consistent {
             return Ok(None);
         }
@@ -51,8 +51,8 @@ pub fn validate(path: &Path) -> Result<Option<ValidatedFile>> {
     }
 
     if image_format == ImageFormat::Svg {
-        if std::fs::read_to_string(path).is_err() { 
-             return Ok(None);
+        if std::fs::read_to_string(path).is_err() {
+            return Ok(None);
         }
     }
 

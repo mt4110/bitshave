@@ -1,8 +1,8 @@
-# imgopt - 安全・確実な画像ロスレス最適化ツール
+# bitshave - 安全・確実な画像ロスレス最適化ツール
 
 **「意味を変えずに、画質を一切落とさず、ファイルサイズだけを減らす。」**
 
-imgoptは、画像の見た目やピクセルデータを一切変更せずに、不要なメタデータや冗長なビット列を整理することでファイルサイズを削減するコマンドラインツールです。
+bitshaveは、画像の見た目やピクセルデータを一切変更せずに、不要なメタデータや冗長なビット列を整理することでファイルサイズを削減するコマンドラインツールです。
 「AIによる補正」や「非可逆圧縮（画質低下）」は一切行いません。「何も変わらなかった」場合は、正直にそのままのファイルを維持します。
 
 ## 🚀 特徴
@@ -29,16 +29,16 @@ cargo run --release -- --help
 
 ```bash
 # 現在のディレクトリ以下の画像を最適化 (in-place)
-imgopt
+bitshave
 
 # 特定のディレクトリを指定して、結果を別フォルダに出力
-imgopt --input ./assets --output ./dist
+bitshave --input ./assets --output ./dist
 
 # 再帰的にサブディレクトリも処理
-imgopt --input ./assets --recursive
+bitshave --input ./assets --recursive
 
 # Dry-run（実際には変更せず、どれくらい減るか予測を表示）
-imgopt --dry-run
+bitshave --dry-run
 ```
 
 ## 仕組み（Optimization Logic）

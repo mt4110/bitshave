@@ -1,5 +1,5 @@
 {
-  description = "imgopt development environment";
+  description = "bitshave development environment";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -35,7 +35,7 @@
           ];
 
           shellHook = ''
-            echo "🖼️  imgopt dev environment loaded via Nix"
+            echo "🪒  bitshave dev environment loaded via Nix"
             echo "Strict dependency: This tool relies on external binaries provided by this shell."
           '';
         };

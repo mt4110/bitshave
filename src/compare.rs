@@ -1,6 +1,6 @@
 use anyhow::Result;
-use std::path::Path;
 use std::fs;
+use std::path::Path;
 
 pub struct FileStats {
     pub size: u64,
@@ -16,14 +16,12 @@ impl FileStats {
     }
 }
 
-pub struct ComparisonRequest {
-    pub original_path: std::path::PathBuf,
-    pub optimized_path: std::path::PathBuf,
-}
-
+#[derive(Debug)]
 pub enum ComparisonResult {
     Improved {
+        #[allow(dead_code)]
         saved_bytes: u64,
+        #[allow(dead_code)]
         percent: f64,
     },
     WorseOrEqual,

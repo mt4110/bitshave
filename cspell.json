@@ -5,6 +5,7 @@
         "bitshave",
         "blake",
         "clap",
+        "codegen",
         "cwebp",
         "gifsicle",
         "imgopt",

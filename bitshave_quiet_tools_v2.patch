@@ -1,0 +1,47 @@
+diff --git a/src/executor.rs b/src/executor.rs
+--- a/src/executor.rs
++++ b/src/executor.rs
+@@ -1,15 +1,22 @@
+ use anyhow::{Context, Result};
+ use std::env;
+ use std::path::{Path, PathBuf};
+-use std::process::Command;
++use std::process::{Command, Stdio};
+ 
+ /// Runs an external command.
+ /// Returns Ok(true) if the command succeeded (exit code == 0).
+ pub fn run_external(program: &str, args: &[&str]) -> Result<bool> {
+-    let status = Command::new(program)
+-        .args(args)
+-        .status()
+-        .with_context(|| format!("Failed to find or execute tool: {}", program))?;
++    // Keep bitshave quiet by default: external tools may print noisy diagnostics
++    // (e.g., invalid test inputs). Set BITSHAVE_VERBOSE=1 to see tool output.
++    let verbose = env::var_os("BITSHAVE_VERBOSE").is_some();
++
++    let mut cmd = Command::new(program);
++    cmd.args(args);
++    if !verbose {
++        cmd.stdout(Stdio::null());
++        cmd.stderr(Stdio::null());
++    }
++
++    let status = cmd
++        .status()
++        .with_context(|| format!("Failed to find or execute tool: {}", program))?;
+ 
+     Ok(status.success())
+ }
+
+diff --git a/flake.nix b/flake.nix
+--- a/flake.nix
++++ b/flake.nix
+@@ -25,7 +25,7 @@
+             
+             # Tools required for runtime (checking PATH dependence)
+             oxipng
+-            libjpeg
++            libjpeg_turbo
+             libwebp
+             nodePackages.svgo 
+             gifsicle

@@ -1,8 +1,8 @@
-# imgopt - Safe & Deterministic Lossless Image Optimizer
+# bitshave - Safe & Deterministic Lossless Image Optimizer
 
 **"Reduce size without touching a single pixel."**
 
-`imgopt` is a CLI tool designed to remove redundant bits and metadata from image files without altering the visual content or pixel data.
+`bitshave` is a CLI tool designed to remove redundant bits and metadata from image files without altering the visual content or pixel data.
 It strictly avoids "AI enhancement" or "lossy compression". If no reduction is possible, it honestly reports "no change" and leaves the file untouched.
 
 ## 🚀 Features
@@ -29,16 +29,16 @@ cargo run --release -- --help
 
 ```bash
 # Optimize images in current directory (in-place)
-imgopt
+bitshave
 
 # Optimize a specific directory and output to a new location
-imgopt --input ./assets --output ./dist
+bitshave --input ./assets --output ./dist
 
 # Recursive scan
-imgopt --input ./assets --recursive
+bitshave --input ./assets --recursive
 
 # Dry-run (Predict size reduction without modifying files)
-imgopt --dry-run
+bitshave --dry-run
 ```
 
 ## 📄 License

@@ -1,8 +1,8 @@
-pub mod png;
-pub mod jpeg;
-pub mod webp;
-pub mod svg;
 pub mod gif;
+pub mod jpeg;
+pub mod png;
+pub mod svg;
+pub mod webp;
 
 use anyhow::Result;
 use std::path::Path;
@@ -14,10 +14,8 @@ pub enum ImageFormat {
     WebP,
     Svg,
     Gif,
-    Unknown,
 }
 
 pub trait Optimizer: Sync + Send {
-    fn can_handle(&self, format: ImageFormat) -> bool;
     fn optimize(&self, path: &Path) -> Result<Option<std::path::PathBuf>>;
 }
