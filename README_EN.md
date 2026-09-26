@@ -1,46 +1,35 @@
-# bitshave - Safe & Deterministic Lossless Image Optimizer
+# bitshave
 
-**"Reduce size without touching a single pixel."**
+**A smaller file is accepted only when its decoded content still matches.**
 
-`bitshave` is a CLI tool designed to remove redundant bits and metadata from image files without altering the visual content or pixel data.
-It strictly avoids "AI enhancement" or "lossy compression". If no reduction is possible, it honestly reports "no change" and leaves the file untouched.
+bitshave is a Rust CLI that runs external optimizers for PNG, JPEG, WebP, and GIF. It accepts a result only when it is smaller, has the same format, and decodes to the same pixels. For GIF, every frame, its delay, and the loop count must also match. Otherwise the source is kept.
 
-## 🚀 Features
+## Guarantees and limits
 
-- **Safety First**: Never corrupts the original file. Discards changes if size increases.
-- **Strictly Lossless**: Only optimizes metadata and compression efficiency.
-- **Fast & Parallel**: Built with Rust for high-performance multi-core processing.
-- **Nix Powered**: Environment is strictly managed via Nix to ensure reproducible builds and dependency management.
-- **Honest Reporting**: Shows exactly how much space was saved, or admits when no optimization was possible.
+- PNG, JPEG, and static WebP are compared as decoded RGBA pixels. GIF frames, delays, and loop count are compared. Invalid output is rejected.
+- Zero-byte, wrong-format, equal-size, and larger results are rejected. Output is staged in the destination directory before replacement; write failures are not reported as success.
+- Animated PNG/WebP are skipped. SVG is recognized but skipped in v0.1.1 because visual equivalence is not verified.
+- Metadata preservation, identical rendering in other decoders, and appearance affected by color profiles or EXIF orientation are **not guaranteed**. Back up images whose metadata matters.
+- `cwebp -lossless` re-encodes decoded WebP pixels. It does not preserve the source WebP's compression representation or binary structure.
 
-## 📦 Requirements
+## Development and usage
 
-**Nix** is required to run and develop this tool.
+The Nix shell provides `oxipng`, `jpegtran`, `cwebp`, and `gifsicle`. Outside Nix, the tools needed for each format must be on PATH; unavailable formats are skipped.
 
 ```bash
-# Enter the Nix environment (installs oxipng, jpegtran, cwebp, svgo automatically)
-nix develop
-
-# Build & Run
-cargo run --release -- --help
+nix develop --command cargo test --all-targets
+nix develop --command cargo clippy --all-targets -- -D warnings
+nix develop --command cargo run --release -- --help
 ```
 
-## 🛠 Usage
-
 ```bash
-# Optimize images in current directory (in-place)
 bitshave
-
-# Optimize a specific directory and output to a new location
-bitshave --input ./assets --output ./dist
-
-# Recursive scan
-bitshave --input ./assets --recursive
-
-# Dry-run (Predict size reduction without modifying files)
-bitshave --dry-run
+bitshave --input ./assets --output ./dist --recursive
+bitshave --input ./assets --dry-run
 ```
 
-## 📄 License
+Only improved files are written with `--output`. Dry-run still runs the external optimizers and validates their candidates. Keep normal backups for in-place use.
 
-MIT License. Free to use.
+## License
+
+MIT License

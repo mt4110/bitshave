@@ -89,6 +89,19 @@ fn process_one(
         }
     };
 
+    if valid_file.format == ImageFormat::Svg {
+        return Ok(Some(ProcessOutcome {
+            path: valid_file.path,
+            format: ImageFormat::Svg,
+            status: Status::Skipped,
+            original_size: valid_file.initial_size,
+            new_size: None,
+            duration: Duration::ZERO,
+            reason: Some("SVG visual equivalence is not verified".to_string()),
+            output_path: None,
+        }));
+    }
+
     // Tool availability per format.
     if let Some((tool, ok)) = tools.is_available_for(valid_file.format) {
         if !ok {
@@ -172,6 +185,25 @@ fn process_one(
                 }));
             }
 
+            match compare::same_pixels(&valid_file.path, &temp_path, valid_file.format) {
+                Ok(true) => {}
+                Ok(false) | Err(_) => {
+                    let _ = std::fs::remove_file(&temp_path);
+                    return Ok(Some(ProcessOutcome {
+                        path: valid_file.path,
+                        format: valid_file.format,
+                        status: Status::Skipped,
+                        original_size: initial_stats.size,
+                        new_size: None,
+                        duration,
+                        reason: Some(
+                            "decoded pixels or animation differ / cannot be verified".to_string(),
+                        ),
+                        output_path: None,
+                    }));
+                }
+            }
+
             let cmp = compare::compare(&initial_stats, &temp_path)
                 .unwrap_or(compare::ComparisonResult::WorseOrEqual);
 
@@ -199,18 +231,39 @@ fn process_one(
                         (valid_file.path.clone(), None)
                     };
 
-                    if let Some(parent) = target_path.parent() {
-                        let _ = std::fs::create_dir_all(parent);
+                    if compare::FileStats::from_file(&valid_file.path)
+                        .map(|current| current.hash != initial_stats.hash)
+                        .unwrap_or(true)
+                    {
+                        let _ = std::fs::remove_file(&temp_path);
+                        return Ok(Some(ProcessOutcome {
+                            path: valid_file.path,
+                            format: valid_file.format,
+                            status: Status::Skipped,
+                            original_size: initial_stats.size,
+                            new_size: None,
+                            duration,
+                            reason: Some("source changed during optimization".to_string()),
+                            output_path: None,
+                        }));
                     }
 
-                    // Cross-device safe move
-                    if std::fs::rename(&temp_path, &target_path).is_err() {
-                        if std::fs::copy(&temp_path, &target_path).is_ok() {
-                            let _ = std::fs::remove_file(&temp_path);
-                        }
+                    if apply_output(&temp_path, &target_path, &valid_file.path).is_err() {
+                        let _ = std::fs::remove_file(&temp_path);
+                        return Ok(Some(ProcessOutcome {
+                            path: valid_file.path,
+                            format: valid_file.format,
+                            status: Status::Skipped,
+                            original_size: initial_stats.size,
+                            new_size: None,
+                            duration,
+                            reason: Some("could not write output".to_string()),
+                            output_path: None,
+                        }));
                     }
+                    let _ = std::fs::remove_file(&temp_path);
 
-                    return Ok(Some(ProcessOutcome {
+                    Ok(Some(ProcessOutcome {
                         path: valid_file.path,
                         format: valid_file.format,
                         status: Status::Optimized,
@@ -219,11 +272,11 @@ fn process_one(
                         duration,
                         reason: None,
                         output_path,
-                    }));
+                    }))
                 }
                 compare::ComparisonResult::WorseOrEqual => {
                     let _ = std::fs::remove_file(&temp_path);
-                    return Ok(Some(ProcessOutcome {
+                    Ok(Some(ProcessOutcome {
                         path: valid_file.path,
                         format: valid_file.format,
                         status: Status::Skipped,
@@ -232,11 +285,11 @@ fn process_one(
                         duration,
                         reason: Some("no size reduction".to_string()),
                         output_path: None,
-                    }));
+                    }))
                 }
                 compare::ComparisonResult::Unchanged => {
                     let _ = std::fs::remove_file(&temp_path);
-                    return Ok(Some(ProcessOutcome {
+                    Ok(Some(ProcessOutcome {
                         path: valid_file.path,
                         format: valid_file.format,
                         status: Status::Skipped,
@@ -245,7 +298,7 @@ fn process_one(
                         duration,
                         reason: Some("unchanged".to_string()),
                         output_path: None,
-                    }));
+                    }))
                 }
             }
         }
@@ -270,6 +323,18 @@ fn process_one(
             output_path: None,
         })),
     }
+}
+
+fn apply_output(optimized: &Path, target: &Path, original: &Path) -> anyhow::Result<()> {
+    let parent = target
+        .parent()
+        .ok_or_else(|| anyhow::anyhow!("output has no parent"))?;
+    std::fs::create_dir_all(parent)?;
+    let staged = tempfile::NamedTempFile::new_in(parent)?;
+    std::fs::copy(optimized, staged.path())?;
+    std::fs::set_permissions(staged.path(), std::fs::metadata(original)?.permissions())?;
+    staged.persist(target)?;
+    Ok(())
 }
 
 fn compute_output_path(input_root: &Path, out_root: &Path, source: &Path) -> PathBuf {

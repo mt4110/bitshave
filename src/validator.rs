@@ -34,14 +34,14 @@ pub fn validate(path: &Path) -> Result<Option<ValidatedFile>> {
 
     if let Some(ext) = path.extension() {
         let ext_str = ext.to_string_lossy().to_lowercase();
-        let consistent = match (image_format, ext_str.as_str()) {
-            (ImageFormat::Png, "png") => true,
-            (ImageFormat::Jpeg, "jpg") | (ImageFormat::Jpeg, "jpeg") => true,
-            (ImageFormat::WebP, "webp") => true,
-            (ImageFormat::Svg, "svg") => true,
-            (ImageFormat::Gif, "gif") => true,
-            _ => false,
-        };
+        let consistent = matches!(
+            (image_format, ext_str.as_str()),
+            (ImageFormat::Png, "png")
+                | (ImageFormat::Jpeg, "jpg" | "jpeg")
+                | (ImageFormat::WebP, "webp")
+                | (ImageFormat::Svg, "svg")
+                | (ImageFormat::Gif, "gif")
+        );
 
         if !consistent {
             return Ok(None);
@@ -50,10 +50,8 @@ pub fn validate(path: &Path) -> Result<Option<ValidatedFile>> {
         return Ok(None);
     }
 
-    if image_format == ImageFormat::Svg {
-        if std::fs::read_to_string(path).is_err() {
-            return Ok(None);
-        }
+    if image_format == ImageFormat::Svg && std::fs::read_to_string(path).is_err() {
+        return Ok(None);
     }
 
     Ok(Some(ValidatedFile {

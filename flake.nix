@@ -27,7 +27,6 @@
             oxipng
             libjpeg_turbo
             libwebp
-            nodePackages.svgo 
             gifsicle
 
             # Build tools
